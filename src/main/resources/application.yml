@@ -1,0 +1,82 @@
+spring:
+  profiles.active: dev
+  jpa:
+    open-in-view: false
+    properties:
+      javax.persistence.validation.mode: AUTO
+      eclipselink:
+        jdbc.allow-native-sql-queries: true
+        ddl-generation: none
+        cache.shared.default: false
+  jackson:
+    default-property-inclusion: non_null
+    date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    tomcat:
+      max-active: 10
+      max-idle: 10
+      min-idle: 2
+      initial-size: 3
+      max-wait: 3000
+      db-properties:
+        currentSchema: ${spring.flyway.schemas}
+        stringtype: unspecified
+        reWriteBatchedInserts: true
+  flyway.schemas: unitymessage
+  web.resources.add-mappings: false
+#  kafka:
+#    client-id: unity-messaging-${environment-name}
+#    producer:
+#      client-id: unity-messaging-producer-${environment-name}
+#      transaction-id-prefix: event-mesh-tx-${environment-name}-${random.uuid}-
+#      properties:
+#        enable.idempotence: true
+server:
+  compression.enabled: true
+  max-http-header-size: 16384
+  port: ${PORT}
+---
+spring:
+  config.activate.on-profile: dev
+  jpa:
+    show-sql: true
+    properties.eclipselink.logging.parameters: true
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/postgres'
+    username: postgres
+    password: postgres
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    jaas.enabled: false
+#    security.protocol: PLAINTEXT
+#    properties:
+#      sasl.mechanism: GSSAPI
+#    ssl:
+#      trust-store-location:
+#      trust-store-password:
+# setting this to DEBUG will pollute the console during coupon code generation
+server.port: 8090
+logbook.format.style: http
+
+---
+spring:
+  config.activate.on-profile: cloud
+  datasource:
+    url: ${credentials.jdbc_uri}
+    username: ${credentials.username}
+    password: ${credentials.password}
+    tomcat:
+      db-properties:
+        loginTimeout: 4 # seconds
+        connectTimeout: 4 # seconds
+        cancelSignalTimeout: 2 # seconds
+        socketTimeout: 60 # seconds
+        tcpKeepAlive: true
+        loadBalanceHosts: false
+        ssl: true
+        sslmode: verify-full
+
+eclipselink.logging.level: ERROR
+log.http.level: ERROR
+log.app.level: WARN

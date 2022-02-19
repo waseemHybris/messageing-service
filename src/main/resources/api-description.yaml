@@ -1,0 +1,316 @@
+openapi: 3.0.0
+info:
+  title: Unity Messaging service API
+  description: >
+    Unity Messaging service API </br>
+
+  version: 0.0.1
+  contact:
+    name: Wasimha@gmail.com
+servers:
+  - url: //TODO host on AWS
+    description: Service URL
+tags:
+  - name: Messages
+    description: Messages are items that we recived and saved
+paths:
+  /messages:
+    get:
+      tags:
+        - Messages
+      summary: Retrieve a list of messages.
+      description: Retrieves all Messages sorted by ts ascending order.
+      parameters:
+        - $ref: '#/components/parameters/ids'
+      responses:
+        200:
+          description: List of paginated Messages.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Messages'
+        400:
+          $ref: '#/components/responses/ErrorResponse400'
+        401:
+          $ref: '#/components/responses/ErrorResponse401'
+        '5XX':
+          $ref: '#/components/responses/ErrorResponse5XX'
+    post:
+      tags:
+        - Messages
+      summary: Create a message.
+      description:
+        Creates a Message with an auto-generated ID.
+      requestBody:
+        $ref: '#/components/requestBodies/Message'
+      responses:
+        201:
+          $ref: '#/components/responses/Created'
+        400:
+          $ref: '#/components/responses/ErrorResponse400'
+        '5XX':
+          $ref: '#/components/responses/ErrorResponse5XX'
+
+components:
+  schemas:
+    Message:
+      type: object
+      properties:
+        ts:
+          type: string
+          description: |
+            linux time stamp
+          example: "1530228282"
+        sender:
+          type: string
+          description: The sender's service identifier.
+          example: "testy-test-service"
+        message:
+          type: object
+          description: the message payload as key value pairs of strings
+          example: {
+              "foo": "bar",
+              "baz": "bang"
+          }
+        sent-from-ip:
+          type: string
+          description: valid IPv4 address
+        priority:
+          type: number
+          description: priority of the recieved message
+          example: 2
+      required:
+        - ts
+        - sender
+        - message
+    Messages:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+    ErrorModel:
+      type: object
+      description: This represent the error model for all possible errors provided by the system.
+      properties:
+        status:
+          type: number
+          description: The HTTP status code applicable to this error.
+          readOnly: true
+          minimum: 100
+          maximum: 599
+        message:
+          type: string
+          description: The description of the error and, in some cases, a solution to the API consumer to resolve the issue.
+          readOnly: true
+        type:
+          type: string
+          description: The type of error message for further clarity.
+          pattern: "[a-z]+[a-z_]*[a-z]+"
+          readOnly: true
+          enum:
+            - bad_payload_syntax
+            - validation_violation
+            - business_error
+            - multipart_resolution_error
+            - insufficient_credentials
+            - insufficient_permissions
+            - element_resource_non_existing
+            - unsupported_method
+            - unsupported_response_content_type
+            - conflict_resource
+            - bad_payload_size
+            - uri_too_long
+            - unsupported_request_content_type
+            - internal_service_error
+            - backing_service_unavailable
+            - service_temporarily_unavailable
+        moreInfo:
+          type: string
+          description: A link to external helpful documentation.
+          readOnly: true
+    ErrorDetailsModel:
+      type: object
+      description: The ErrorDetailsModel represents the model for an error returned by the system.
+      properties:
+        field:
+          type: string
+          description: The specific payload attribute or query parameter causing the error.
+          readOnly: true
+        type:
+          type: string
+          description: The type of error message for further clarity.
+          pattern: "[a-z]+[a-z_]*[a-z]+"
+          readOnly: true
+          enum:
+            - missing_field
+            - invalid_field
+            - missing_header
+            - invalid_header
+            - missing_query_parameter
+            - invalid_query_parameter
+            - invalid_uri_parameter
+            - out_of_range_parameter
+            - unique_index_violation
+        message:
+          type: string
+          description: The description of the error and, in some cases, a solution to the API consumer to resolve the issue.
+          readOnly: true
+        moreInfo:
+          type: string
+          description: A link to external helpful documentation.
+          readOnly: true
+    ErrorModel400:
+      description: "Bad request - The request failed due to one of the following reasons: 1) the payload format is incorrect; 2) the defined validation constraints are violated; or 3) the business rule is not respected. Do not repeat the call without modifying the request."
+      allOf:
+        - $ref: '#/components/schemas/ErrorModel'
+        - type: object
+          properties:
+            type:
+              type: string
+              description: The type of error message for further clarity.
+              pattern: "[a-z]+[a-z_]*[a-z]+"
+              readOnly: true
+              enum:
+                - bad_payload_syntax
+                - validation_violation
+                - business_error
+                - multipart_resolution_error
+            details:
+              type: array
+              description: An error can occur for multiple reasons, or it can be specified in more detail using a more precise error.
+              items:
+                $ref: '#/components/schemas/ErrorDetailsModel'
+      example:
+        status: 400
+        message: "Bad request - The request failed due to one of the following reasons: 1) the payload format is incorrect; 2) the defined validation constraints are violated; or 3) the business rule is not respected. Do not repeat the call without modifying the request."
+        details: [ {
+          field: <field_name>,
+          type: invalid_field,
+          message: May not be null
+        } ]
+    ErrorModel401:
+      description: The request has not been applied because it lacks valid authentication credentials for the target resource.
+      allOf:
+        - $ref: '#/components/schemas/ErrorModel'
+        - type: object
+          properties:
+            type:
+              type: string
+              description: The type of error message for further clarity.
+              pattern: '[a-z]+[a-z_]*[a-z]+'
+              readOnly: true
+              enum:
+                - insufficient_credentials
+      example:
+        status: 401
+        message: Full authentication is required to access this resource.
+        type: insufficient_credentials
+    ErrorModel404:
+      description: The server has not found anything matching the Request-URI.
+      allOf:
+        - $ref: '#/components/schemas/ErrorModel'
+        - type: object
+          properties:
+            type:
+              type: string
+              description: The type of error message for further clarity.
+              pattern: "[a-z]+[a-z_]*[a-z]+"
+              readOnly: true
+              enum:
+                - element_resource_non_existing
+      example:
+        status: 404
+        message: ID '7tbJKgi9th' is not found.
+        type: element_resource_non_existing
+    ErrorModel5XX:
+      description: The server encountered an unexpected condition that prevented it from fulfilling the request.
+      allOf:
+        - $ref: '#/components/schemas/ErrorModel'
+        - type: object
+          properties:
+            type:
+              type: string
+              description: The type of error message for further clarity.
+              pattern: "[a-z]+[a-z_]*[a-z]+"
+              readOnly: true
+              enum:
+                - internal_server_error
+                - backing_service_unavailable
+                - service_temporarily_unavailable
+      example:
+        status: 500
+        message: A server-side exception occurred that prevented the system from correctly returning the result.
+        type: internal_server_error
+  responses:
+    Created:
+      description: A new resource is created.
+      headers:
+        location:
+          description: A URI link to the created resource.
+          schema:
+            type: string
+    Accepted:
+      description: The request is accepted.
+      headers:
+        Location:
+          description: A URI link to the task resource created.
+          schema:
+            type: string
+        Warning:
+          description: Additional information that is not reflected in the status code.
+          schema:
+            type: string
+            example: 'Warning: 299 - "This resource is expiring in 24 hours."'
+    ErrorResponse400:
+      description: "Bad request - The request failed due to one of the following reasons: 1) the payload format is incorrect; 2) the defined validation constraints are violated; or 3) the business rule is not respected. Do not repeat the call without modifying the request."
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel400'
+    ErrorResponse401:
+      description: Unauthorized - The request requires user authentication.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel401'
+    ErrorResponse404:
+      description: Not Found - The server has not found anything matching the Request-URI. No indication is given of whether the condition is temporary or permanent.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel404'
+    ErrorResponse5XX:
+      description: Internal Server Error - The server encountered an unexpected condition which prevented it from fulfilling the request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorModel5XX'
+  requestBodies:
+    Message:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+      description: Message request payload.
+      required: true
+  parameters:
+    id:
+      name: id
+      description: Resource identifier.
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 2
+        maxLength: 255
+        pattern: '^[a-zA-Z0-9_\-\.\(\)~!\*''+ &]+$'
+    ids:
+      name: ids
+      description: A comma-separated list of resource identifiers. There is a maximum of 20 IDs per list.
+      in: query
+      required: false
+      schema:
+        type: string
+        maxItems: 20

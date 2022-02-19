@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: unity-messaging
+---
+spring:
+  profiles: default
+
+spring.profiles.active: dev
+
+environment.name: dev
