@@ -39,7 +39,7 @@ public class UnityMessageServiceImpl implements UnityMessageService
 		entityManager.setProperty("eclipselink.tenant-id", tenant);
 		final var uuid = UUID.randomUUID().toString();
 
-		final var entity = conversionService.convert(messageDto);
+		final var entity = conversionService.convert(tenant, messageDto);
 		entity.setId(uuid);
 		messageRepository.save(entity);
 		return entity.getId();

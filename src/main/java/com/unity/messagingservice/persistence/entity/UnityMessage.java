@@ -25,13 +25,15 @@ public class UnityMessage
 	@Id
 	@Column(name = UnityMessageDefinition.Column.ID)
 	private String id;
+	@Column(name = UnityMessageDefinition.Column.TENANT_ID)
+	private String tenant_id;
 	@Column(name = UnityMessageDefinition.Column.TS, nullable = false)
 	private String ts;
 	@Column(name = UnityMessageDefinition.Column.SENDER, nullable = false)
 	private String sender;
-	@Column(name = UnityMessageDefinition.Column.MESSAGE, nullable = false)
-	@Convert(converter = MessagePayloadConvertor.class)
-	private ObjectNode message;
+//	@Column(name = UnityMessageDefinition.Column.MESSAGE, nullable = false)
+//	@Convert(converter = MessagePayloadConvertor.class)
+//	private ObjectNode message;
 	@Column(name = UnityMessageDefinition.Column.SENT_FROM_IP)
 	private String sendFromIp;
 	@Column(name = UnityMessageDefinition.Column.PRIORITY)

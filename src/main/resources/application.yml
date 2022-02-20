@@ -11,6 +11,8 @@ spring:
   jackson:
     default-property-inclusion: non_null
     date-format: com.fasterxml.jackson.databind.util.ISO8601DateFormat
+    deserialization:
+      fail-on-unknown-properties: true
   datasource:
     driver-class-name: org.postgresql.Driver
     tomcat:
@@ -39,6 +41,9 @@ server:
 ---
 spring:
   config.activate.on-profile: dev
+  output:
+    ansi:
+      enabled: ALWAYS
   jpa:
     show-sql: true
     properties.eclipselink.logging.parameters: true

@@ -7,7 +7,7 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MessageDtoToUnityMessageConvertor implements Converter<MessageDto, UnityMessage>
+public class MessageDtoToUnityMessageConvertor
 {
 	private final ObjectMapper objectMapper;
 
@@ -16,18 +16,18 @@ public class MessageDtoToUnityMessageConvertor implements Converter<MessageDto, 
 		this.objectMapper = objectMapper;
 	}
 
-	@Override
-	public UnityMessage convert(final MessageDto source)
+
+	public UnityMessage convert(final String tenant, final MessageDto source)
 	{
 		final ObjectNode messagePayload = objectMapper.valueToTree(source.getMessage());
 
 		 return UnityMessage.builder()
 				.ts(source.getTs())
-				.message(messagePayload)
+				//.message(messagePayload)
 				.priority(source.getPriority())
 				.sender(source.getSender())
 				.sendFromIp(source.getSentFromIp())
-				//.id(source.get)
+				.tenant_id(tenant)
 		.build();
 	}
 }

@@ -4,28 +4,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 
 import com.unity.messagingservice.constant.Constants;
-import jakarta.validation.constraints.Pattern;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+
+import com.unity.messagingservice.web.controller.validator.ValidUnixTimeStamp;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.lang.NonNull;
+import javax.validation.constraints.NotNull;
 
+import javax.validation.Valid;
 import java.util.Map;
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Valid
 public class MessageDto
 {
-	@NonNull
+	@NotNull
+	@NotBlank
+	@ValidUnixTimeStamp
 	private String ts;
-	@NonNull
+	@NotNull
 	private String sender;
-	@NonNull
+	@NotNull
 	private Map<String, String> message;
 	@JsonProperty("sent-from-ip")
-	@Pattern(regexp = Constants.IP4ADDRESS_REG_EXP)
+	@Pattern(regexp = Constants.IPV4_PATTERN_SHORTEST)
 	private String sentFromIp;
 	private int priority;
 }

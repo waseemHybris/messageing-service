@@ -9,7 +9,7 @@ CREATE TABLE unitymessage (
     id character varying(255) NOT NULL,
     ts character varying(255) NOT NULL,
     sender character varying(255) NOT NULL,
-    message jsonb NOT NULL,
+--    message jsonb NOT NULL,
     sent_from_ip character varying(255),
     priority integer
 );
