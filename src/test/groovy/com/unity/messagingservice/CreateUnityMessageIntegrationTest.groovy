@@ -13,49 +13,103 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers
 import spock.lang.Narrative
 import spock.lang.Specification
 import spock.lang.Title
+import spock.lang.Unroll
 
-@Title("WebController Specification")
-@Narrative("The Specification of the behaviour of the WebController. It can greet a person, change the name and reset it to 'world'")
+@Title("UnityMessageController Specification")
+@Narrative("The Specification of the behaviour of the UnityMessageController.")
 @SpringBootTest
 @AutoConfigureMockMvc
-@EnableAutoConfiguration(exclude= SecurityAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = SecurityAutoConfiguration.class)
 class CreateUnityMessageIntegrationTest extends Specification {
 
     @Autowired
     private MockMvc mvc
 
-    def "when get is performed then the response has status 200 and content is 'Hello world!'"() {
-        expect: "Status is 200 and the response is 'Hello world!'"
+    def "should succeed with status 204 with no content'"() {
+        expect: "Status is 204 for valid payload'"
 
-        mvc.perform( MockMvcRequestBuilders
+        mvc.perform(MockMvcRequestBuilders
                 .post("/messages")
-                .content(asJsonString(buildSampleMessagePayload()))
-                .header("tenant","test")
+                .content(asJsonString(buildValidMessagePayload()))
+                .header("tenant", "test")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isAccepted())
-
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
     }
+
+
+    @Unroll
+    def "should fail with 400 when violating validation rules#i"(def i, def usecase, def testedAttributes) {
+        given:
+        def validPayload = buildValidMessagePayload()
+        def invalidPayload = validPayload << testedAttributes
+
+        expect: "Status is 400 for invalid payload'"
+        mvc.perform(MockMvcRequestBuilders
+                .post("/messages")
+                .content(asJsonString(invalidPayload))
+                .header("tenant", "test")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+
+        where:
+        i | usecase                  | testedAttributes
+        /*----------------------------------------------------------------------*/
+        1 | "ts invalid"             | ["ts": ""]
+        2 | "ts invalid"             | ["ts": "xyz"]
+        3 | "ts not present"         | ["ts": null]
+        4 | "sender not present"     | ["sender": null]
+        5 | "message not present"    | ["message": null]
+        6 | "message not valid"      | ["message": "not a json"]
+        7 | "sent-from-ip not valid" | ["sent-from-ip": "not a valid Ip"]
+        8 | "extra properties"       | ["extra-property": "extra value"]
+    }
+
+    @Unroll
+    def "should succeed with status 204 with no content'"(def i, def usecase, def testedAttributes) {
+
+        given:
+        def Payload = buildValidMessagePayload()
+        def validPayload = Payload << testedAttributes
+        expect: "Status is 204 for valid payload'"
+
+        mvc.perform(MockMvcRequestBuilders
+                .post("/messages")
+                .content(asJsonString(validPayload))
+                .header("tenant", "test")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isNoContent())
+        where:
+        i | usecase                    | testedAttributes
+        /*----------------------------------------------------------------------*/
+        1 | "sent-from-ip not present" | ["sent-from-ip": null]
+        2 | "priority not present"     | ["priority": null]
+    }
+
+
+    def static buildValidMessagePayload() {
+        [
+                "ts"          : "1645372554",
+                "sender"      : "testy-test-service",
+                "message"     : [
+                        "foo": "bar",
+                        "baz": "bang"
+                ],
+                "sent-from-ip": "192.0.33.146",
+                "priority"    : 2
+
+        ]
+    }
+
 
     static String asJsonString(final Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }}
-
-    def static buildSampleMessagePayload() {
-        [
-                "ts"      : "1645372554",
-                "sender": "testy-test-service",
-                "message"    : [
-                        "foo": "bar",
-                        "baz"  : "bang"
-                ],
-                "sent-from-ip"    : "192.0.33.146",
-                "priority"     : 2
-
-        ]
+        }
     }
 
 }

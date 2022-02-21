@@ -1,4 +1,5 @@
 package com.unity.messagingservice
+
 import com.unity.messagingservice.web.controller.UnityMessageController
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,11 +13,11 @@ import spock.lang.Title
 class LoadContextTest extends Specification {
 
     @Autowired(required = false)
-    private UnityMessageController webController
+    private UnityMessageController unityMessageController
 
 
     def "when context is loaded then all expected beans are created"() {
-        expect: "the WebController is created"
-        webController
+        expect: "the UnityMessageController is created"
+        unityMessageController
     }
 }

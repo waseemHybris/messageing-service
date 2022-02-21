@@ -47,11 +47,11 @@ public class UnityMessageController
 	}
 
 	@PostMapping
-	public HttpEntity<String> create(@RequestHeader final String tenant, @RequestBody @Valid final MessageDto messageDto)
+	public HttpEntity<Void> create(@RequestHeader final String tenant, @RequestBody @Valid final MessageDto messageDto)
 	{
 		log.error(messageDto.toString());
-		final var messageId = unityMessageService.processMessage(tenant, messageDto);
-		return ResponseEntity.accepted().body(messageId);
+		unityMessageService.processMessage(tenant, messageDto);
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
