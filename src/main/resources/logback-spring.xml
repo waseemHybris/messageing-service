@@ -1,7 +1,3 @@
-<!--
-  ~ Copyright (c) 2021 SAP SE or an SAP affiliate company. All rights reserved.
-  -->
-
 <configuration>
 
 	<!-- definition of appender STDOUT -->
@@ -10,23 +6,20 @@
 			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n</pattern>
 		</encoder>
 	</appender>
-	<!-- Eclipse Link -->
-	<springProperty scope="context" name="eclipselinkLoggingLevel" source="eclipselink.logging.level" defaultValue="DEBUG"/>
-	<logger name="org.eclipse.persistence.logging" level="DEBUG" />
 
 	<logger name="org.springframework.jdbc">
-		<level value="all" />
+		<level value="INFO" />
 	</logger>
 
 	<logger name="eclipselink.logging.level">
-		<level value="all" />
+		<level value="INFO" />
 	</logger>
 
 	<logger name="org.springframework.jdbc.core.StatementCreatorUtils">
 		<level value="trace" />
 	</logger>
 
-	<root level="DEBUG">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
 </configuration>

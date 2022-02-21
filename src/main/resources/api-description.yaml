@@ -8,7 +8,7 @@ info:
   contact:
     name: Wasimha@gmail.com
 servers:
-  - url: //TODO host on AWS
+  - url: http://localhost:8090/messages
     description: Service URL
 tags:
   - name: Messages
@@ -75,6 +75,7 @@ components:
         sent-from-ip:
           type: string
           description: valid IPv4 address
+          example: "192.0.33.254"
         priority:
           type: number
           description: priority of the recieved message

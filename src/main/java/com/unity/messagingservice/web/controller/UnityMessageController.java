@@ -1,10 +1,12 @@
 package com.unity.messagingservice.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unity.messagingservice.dto.MessageDto;
 import com.unity.messagingservice.dto.MessageResponseDto;
 import com.unity.messagingservice.dto.MessagingQueryObject;
 import com.unity.messagingservice.service.UnityMessageService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,6 +34,7 @@ import java.util.Optional;
 @Validated
 @RestController
 @RequestMapping("/messages")
+@Slf4j
 public class UnityMessageController
 {
 
@@ -45,10 +48,12 @@ public class UnityMessageController
 	}
 
 	@PostMapping
-	public HttpEntity<String> create(@RequestHeader final String tenant, @RequestBody @Valid final MessageDto messageDto)
+	public HttpEntity<Void> create(@RequestHeader final String tenant, @RequestBody @Valid final MessageDto messageDto)
+			throws JsonProcessingException
 	{
-		final var messageId = unityMessageService.processMessage(tenant, messageDto);
-		return ResponseEntity.accepted().body(messageId);
+		log.info("starting to create and publish message with payload: {}", messageDto.toString());
+		unityMessageService.processMessage(tenant, messageDto);
+		return ResponseEntity.noContent().build();
 	}
 
 	@GetMapping
@@ -56,6 +61,7 @@ public class UnityMessageController
 			@PageableDefault(size = 20, direction = Sort.Direction.ASC) Pageable pageable,
 			@ModelAttribute(value = QUERY_OBJECT_ATTRIBUTE, binding = false) final MessagingQueryObject queryObject)
 	{
+		log.info("starting to get messages}");
 		var response = unityMessageService.getAll(tenant, queryObject, pageable);
 		return ResponseEntity.ok().body(response);
 	}
