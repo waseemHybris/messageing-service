@@ -5,6 +5,7 @@ import com.unity.messagingservice.dto.MessageResponseDto;
 import com.unity.messagingservice.dto.MessagingQueryObject;
 import com.unity.messagingservice.service.UnityMessageService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -32,6 +33,7 @@ import java.util.Optional;
 @Validated
 @RestController
 @RequestMapping("/messages")
+@Slf4j
 public class UnityMessageController
 {
 
@@ -47,6 +49,7 @@ public class UnityMessageController
 	@PostMapping
 	public HttpEntity<String> create(@RequestHeader final String tenant, @RequestBody @Valid final MessageDto messageDto)
 	{
+		log.error(messageDto.toString());
 		final var messageId = unityMessageService.processMessage(tenant, messageDto);
 		return ResponseEntity.accepted().body(messageId);
 	}
