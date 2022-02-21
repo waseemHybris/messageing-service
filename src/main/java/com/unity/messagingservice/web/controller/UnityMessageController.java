@@ -1,5 +1,6 @@
 package com.unity.messagingservice.web.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unity.messagingservice.dto.MessageDto;
 import com.unity.messagingservice.dto.MessageResponseDto;
 import com.unity.messagingservice.dto.MessagingQueryObject;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,6 +49,7 @@ public class UnityMessageController
 
 	@PostMapping
 	public HttpEntity<Void> create(@RequestHeader final String tenant, @RequestBody @Valid final MessageDto messageDto)
+			throws JsonProcessingException
 	{
 		log.info("starting to create and publish message with payload: {}", messageDto.toString());
 		unityMessageService.processMessage(tenant, messageDto);

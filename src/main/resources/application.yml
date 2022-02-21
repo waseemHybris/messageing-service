@@ -25,7 +25,7 @@ spring:
       initial-size: 3
       max-wait: 3000
       db-properties:
-        currentSchema: unitymessage
+        currentSchema: ${spring.flyway.schemas}
         stringtype: unspecified
   kafka:
     bootstrapAddress: localhost:9092
@@ -36,6 +36,7 @@ spring:
   output:
     ansi:
       enabled: ALWAYS
+  flyway.schemas: unitymessage
   web.resources.add-mappings: false
 server.port: 8090
 logbook.format.style: http

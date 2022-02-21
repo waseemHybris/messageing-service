@@ -1,7 +1,7 @@
 package com.unity.messagingservice.service.convertor;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.unity.messagingservice.dto.MessageDto;
 import com.unity.messagingservice.persistence.entity.UnityMessage;
 import org.springframework.stereotype.Component;
@@ -16,13 +16,14 @@ public class MessageDtoToUnityMessageConvertor
 		this.objectMapper = objectMapper;
 	}
 
-	public UnityMessage convert(final String tenant, final MessageDto source)
+	public UnityMessage convert(final String tenant, final MessageDto source) throws JsonProcessingException
 	{
-		final ObjectNode messagePayload = objectMapper.valueToTree(source.getMessage());
+		final String messageStringPayload = objectMapper.writeValueAsString(source.getMessage());
+
 
 		return UnityMessage.builder()
 				.ts(source.getTs())
-				//.message(messagePayload)
+				.message(messageStringPayload)
 				.priority(source.getPriority())
 				.sender(source.getSender())
 				.sendFromIp(source.getSentFromIp())

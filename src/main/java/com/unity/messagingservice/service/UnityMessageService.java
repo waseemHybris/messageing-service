@@ -1,5 +1,6 @@
 package com.unity.messagingservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unity.messagingservice.dto.MessageDto;
 import com.unity.messagingservice.dto.MessageResponseDto;
 import com.unity.messagingservice.dto.MessagingQueryObject;
@@ -15,7 +16,7 @@ public interface UnityMessageService
 	 * @param messageDto message payload
 	 * @return the message generated id
 	 */
-	String processMessage(final String tenant, final MessageDto messageDto);
+	String processMessage(final String tenant, final MessageDto messageDto) throws JsonProcessingException;
 
 	Page<MessageResponseDto> getAll(final String tenant, final MessagingQueryObject messagingQueryObject, final Pageable pageable);
 

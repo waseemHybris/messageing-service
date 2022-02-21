@@ -1,7 +1,5 @@
 package com.unity.messagingservice.persistence.entity;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.unity.messagingservice.persistence.entity.converter.MessagePayloadConvertor;
 import com.unity.messagingservice.persistence.namespace.UnityMessageDefinition;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -31,9 +28,8 @@ public class UnityMessage
 	private String ts;
 	@Column(name = UnityMessageDefinition.Column.SENDER, nullable = false)
 	private String sender;
-//	@Column(name = UnityMessageDefinition.Column.MESSAGE, nullable = false)
-//	@Convert(converter = MessagePayloadConvertor.class)
-//	private ObjectNode message;
+	@Column(name = UnityMessageDefinition.Column.MESSAGE, nullable = false)
+	private String message;
 	@Column(name = UnityMessageDefinition.Column.SENT_FROM_IP)
 	private String sendFromIp;
 	@Column(name = UnityMessageDefinition.Column.PRIORITY)

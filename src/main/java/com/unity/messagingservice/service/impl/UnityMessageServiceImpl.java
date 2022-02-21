@@ -1,5 +1,6 @@
 package com.unity.messagingservice.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.unity.messagingservice.dto.MessageDto;
 import com.unity.messagingservice.dto.MessageResponseDto;
 import com.unity.messagingservice.dto.MessagingQueryObject;
@@ -39,14 +40,12 @@ public class UnityMessageServiceImpl implements UnityMessageService
 
 	@Override
 	@Transactional(value = "transactionManager")
-	public String processMessage(final String tenant, final MessageDto messageDto)
+	public String processMessage(final String tenant, final MessageDto messageDto) throws JsonProcessingException
 	{
 		final var entity = persistMessage(tenant, messageDto);
 		publishToTopic(messageDto);
 		return entity.getId();
 	}
-
-
 
 	@Override
 	public Page<MessageResponseDto> getAll(final String tenant, final MessagingQueryObject messagingQueryObject,
@@ -61,12 +60,11 @@ public class UnityMessageServiceImpl implements UnityMessageService
 		unityMessageKafkaTemplate.send(topicName, messageDto);
 	}
 
-	private UnityMessage persistMessage(final String tenant, final MessageDto messageDto)
+	private UnityMessage persistMessage(final String tenant, final MessageDto messageDto) throws JsonProcessingException
 	{
 		final var entity = conversionService.convert(tenant, messageDto);
 		entity.setId(UUID.randomUUID().toString());
 		messageRepository.save(entity);
 		return entity;
 	}
-
 }
