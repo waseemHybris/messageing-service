@@ -4,15 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
 
 @Slf4j
 public class ValidUnixTimeStampValidator implements ConstraintValidator<ValidUnixTimeStamp, String>
 {
-
 	@Override
 	public void initialize(final ValidUnixTimeStamp constraintAnnotation)
 	{
@@ -22,14 +19,11 @@ public class ValidUnixTimeStampValidator implements ConstraintValidator<ValidUni
 	@Override
 	public boolean isValid(final String timeStamp, final ConstraintValidatorContext constraintValidatorContext)
 	{
-		//addViolationByMessage("The time stamp is required and needs to be a valid unix time", s, constraintValidatorContext);
-
 		try
 		{
-
 			Instant instant = Instant.ofEpochSecond(Long.parseLong(timeStamp));
 			Date date = Date.from(instant);
-			log.info("ts is a valid unix timestamp and it corresponds to {}", date);
+			log.info("ts is a valid Epoch Unix Timestamp and it translates to: {}", date);
 			return true;
 		}
 		catch (Exception e)

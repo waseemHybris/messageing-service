@@ -54,16 +54,17 @@ class CreateUnityMessageIntegrationTest extends Specification {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
 
         where:
-        i | usecase                  | testedAttributes
+        i | usecase                    | testedAttributes
         /*----------------------------------------------------------------------*/
-        1 | "ts invalid"             | ["ts": ""]
-        2 | "ts invalid"             | ["ts": "xyz"]
-        3 | "ts not present"         | ["ts": null]
-        4 | "sender not present"     | ["sender": null]
-        5 | "message not present"    | ["message": null]
-        6 | "message not valid"      | ["message": "not a json"]
-        7 | "sent-from-ip not valid" | ["sent-from-ip": "not a valid Ip"]
-        8 | "extra properties"       | ["extra-property": "extra value"]
+        1 | "ts invalid"               | ["ts": ""]
+        2 | "ts invalid"               | ["ts": "xyz"]
+        3 | "ts not present"           | ["ts": null]
+        4 | "sender not present"       | ["sender": null]
+        5 | "message not present"      | ["message": null]
+        6 | "message not valid"        | ["message": "not a json"]
+        7 | "message size less than 1" | ["message": [[]]]
+        8 | "sent-from-ip not valid"   | ["sent-from-ip": "not a valid Ip"]
+        9 | "extra properties"         | ["extra-property": "extra value"]
     }
 
     @Unroll
@@ -82,10 +83,12 @@ class CreateUnityMessageIntegrationTest extends Specification {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
         where:
-        i | usecase                    | testedAttributes
+        i | usecase                              | testedAttributes
         /*----------------------------------------------------------------------*/
-        1 | "sent-from-ip not present" | ["sent-from-ip": null]
-        2 | "priority not present"     | ["priority": null]
+        1 | "sent-from-ip not present"           | ["sent-from-ip": null]
+        2 | "priority not present"               | ["priority": null]
+        3 | "message of 1 field set"             | ["message": ["item1": "value1"]]
+        4 | "message of 1 field set null value" | ["message": ["item1": null]]
     }
 
 

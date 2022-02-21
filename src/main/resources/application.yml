@@ -27,17 +27,13 @@ spring:
         reWriteBatchedInserts: true
   flyway.schemas: unitymessage
   web.resources.add-mappings: false
-#  kafka:
-#    client-id: unity-messaging-${environment-name}
-#    producer:
-#      client-id: unity-messaging-producer-${environment-name}
-#      transaction-id-prefix: event-mesh-tx-${environment-name}-${random.uuid}-
-#      properties:
-#        enable.idempotence: true
-server:
-  compression.enabled: true
-  max-http-header-size: 16384
-  port: ${PORT}
+kafka:
+  bootstrapAddress: localhost:9092
+  producer:
+    transaction-id-prefix: tx-
+    properties:
+      enable.idempotence: true
+      transactional.id: tran-id-1
 ---
 spring:
   config.activate.on-profile: dev
