@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +50,7 @@ public class UnityMessageController
 	@PostMapping
 	public HttpEntity<Void> create(@RequestHeader final String tenant, @RequestBody @Valid final MessageDto messageDto)
 	{
-		log.error(messageDto.toString());
+		log.info("starting to create and publish message with payload: {}", messageDto.toString());
 		unityMessageService.processMessage(tenant, messageDto);
 		return ResponseEntity.noContent().build();
 	}
@@ -59,6 +60,7 @@ public class UnityMessageController
 			@PageableDefault(size = 20, direction = Sort.Direction.ASC) Pageable pageable,
 			@ModelAttribute(value = QUERY_OBJECT_ATTRIBUTE, binding = false) final MessagingQueryObject queryObject)
 	{
+		log.info("starting to get messages}");
 		var response = unityMessageService.getAll(tenant, queryObject, pageable);
 		return ResponseEntity.ok().body(response);
 	}

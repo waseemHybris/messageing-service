@@ -3,16 +3,18 @@ package com.unity.messagingservice.service.impl;
 import com.unity.messagingservice.dto.MessageDto;
 import com.unity.messagingservice.dto.MessageResponseDto;
 import com.unity.messagingservice.dto.MessagingQueryObject;
+import com.unity.messagingservice.persistence.entity.UnityMessage;
 import com.unity.messagingservice.repository.MessageRepository;
 import com.unity.messagingservice.service.UnityMessageService;
 import com.unity.messagingservice.service.convertor.MessageDtoToUnityMessageConvertor;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
@@ -20,6 +22,9 @@ import java.util.UUID;
 @Service
 public class UnityMessageServiceImpl implements UnityMessageService
 {
+	@Value(value = "${spring.kafka.topicName}")
+	private String topicName;
+
 	private final MessageDtoToUnityMessageConvertor conversionService;
 	private final MessageRepository messageRepository;
 	private final KafkaTemplate<String, MessageDto> unityMessageKafkaTemplate;
@@ -33,17 +38,15 @@ public class UnityMessageServiceImpl implements UnityMessageService
 	}
 
 	@Override
-	@Transactional(isolation = Isolation.READ_COMMITTED)
+	@Transactional(value = "transactionManager")
 	public String processMessage(final String tenant, final MessageDto messageDto)
 	{
-		final var entity = conversionService.convert(tenant, messageDto);
-		entity.setId(UUID.randomUUID().toString());
-		messageRepository.save(entity);
-		// if an exception happens when sending the kafka message to the topic, the DB transaction will be rolled back.
-		unityMessageKafkaTemplate.send("unityMessageQueue", messageDto);
-		// there is a small risk here that kafka msg is successfully published to the topic but the DB transaction fails and rolled back.
+		final var entity = persistMessage(tenant, messageDto);
+		publishToTopic(messageDto);
 		return entity.getId();
 	}
+
+
 
 	@Override
 	public Page<MessageResponseDto> getAll(final String tenant, final MessagingQueryObject messagingQueryObject,
@@ -51,6 +54,19 @@ public class UnityMessageServiceImpl implements UnityMessageService
 	{
 		//TODO implement and test me
 		return null;
+	}
+
+	private void publishToTopic(final MessageDto messageDto)
+	{
+		unityMessageKafkaTemplate.send(topicName, messageDto);
+	}
+
+	private UnityMessage persistMessage(final String tenant, final MessageDto messageDto)
+	{
+		final var entity = conversionService.convert(tenant, messageDto);
+		entity.setId(UUID.randomUUID().toString());
+		messageRepository.save(entity);
+		return entity;
 	}
 
 }
