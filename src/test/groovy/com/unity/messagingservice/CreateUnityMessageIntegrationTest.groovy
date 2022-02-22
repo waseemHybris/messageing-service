@@ -83,11 +83,11 @@ class CreateUnityMessageIntegrationTest extends Specification {
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNoContent())
         where:
-        i | usecase                              | testedAttributes
+        i | usecase                             | testedAttributes
         /*----------------------------------------------------------------------*/
-        1 | "sent-from-ip not present"           | ["sent-from-ip": null]
-        2 | "priority not present"               | ["priority": null]
-        3 | "message of 1 field set"             | ["message": ["item1": "value1"]]
+        1 | "sent-from-ip not present"          | ["sent-from-ip": null]
+        2 | "priority not present"              | ["priority": null]
+        3 | "message of 1 field set"            | ["message": ["item1": "value1"]]
         4 | "message of 1 field set null value" | ["message": ["item1": null]]
     }
 

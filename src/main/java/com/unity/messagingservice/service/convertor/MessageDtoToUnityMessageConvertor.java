@@ -6,6 +6,8 @@ import com.unity.messagingservice.dto.MessageDto;
 import com.unity.messagingservice.persistence.entity.UnityMessage;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class MessageDtoToUnityMessageConvertor
 {
@@ -20,14 +22,21 @@ public class MessageDtoToUnityMessageConvertor
 	{
 		final String messageStringPayload = objectMapper.writeValueAsString(source.getMessage());
 
-
-		return UnityMessage.builder()
+		var message = UnityMessage.builder()
 				.ts(source.getTs())
 				.message(messageStringPayload)
-				.priority(source.getPriority())
 				.sender(source.getSender())
-				.sendFromIp(source.getSentFromIp())
 				.tenant_id(tenant)
 				.build();
+
+		if (Objects.nonNull(source.getSentFromIp()))
+		{
+			message.setSendFromIp(source.getSentFromIp());
+		}
+		if (Objects.nonNull(source.getPriority()))
+		{
+			message.setPriority(source.getPriority());
+		}
+		return message;
 	}
 }

@@ -35,5 +35,5 @@ public class MessageDto
 	@JsonProperty("sent-from-ip")
 	@Pattern(regexp = Constants.IPV4_PATTERN_SHORTEST)
 	private String sentFromIp;
-	private int priority;
+	private Integer priority;
 }
