@@ -29,14 +29,14 @@ spring:
         stringtype: unspecified
   kafka:
     bootstrapAddress: localhost:9092
-    topicName: unityMessageQueue
+    topicName: messageQueue
     producer:
       transaction-id-prefix: tx
       enable.idempotence: true
   output:
     ansi:
       enabled: ALWAYS
-  flyway.schemas: unitymessage
+  flyway.schemas: message
   web.resources.add-mappings: false
 server.port: 8090
 logbook.format.style: http

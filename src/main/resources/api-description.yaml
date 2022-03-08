@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: Unity Messaging service API
+  title: Messaging service API
   description: >
-    Unity Messaging service API </br>
+   Messaging service API </br>
 
   version: 0.0.1
   contact:

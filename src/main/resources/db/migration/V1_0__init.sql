@@ -1,10 +1,10 @@
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL PRIVILEGES ON TABLES TO PUBLIC;
 
 --
--- Name: unity message; Type: TABLE; Schema: public; Owner: postgres
+-- Name:  message; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE unitymessage (
+CREATE TABLE message (
     tenant_id character varying(31) NOT NULL,
     id character varying(255) NOT NULL,
     ts character varying(255) NOT NULL,

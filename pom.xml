@@ -8,11 +8,11 @@
         <version>2.5.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.unity</groupId>
-    <artifactId>unity-messaging-service</artifactId>
+    <groupId>com.wh</groupId>
+    <artifactId>messaging-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>unity-messaging-service</name>
-    <description>Unity Messaging service</description>
+    <name>messaging-service</name>
+    <description>Messaging service</description>
     <properties>
         <java.version>13</java.version>
     </properties>
